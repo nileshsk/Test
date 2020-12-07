@@ -1,0 +1,5 @@
+name: Site Information
+type: module
+description: Site Information module to add new configuration for API key.
+core: 8.x
+package: Custom

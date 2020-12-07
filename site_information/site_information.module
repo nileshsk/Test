@@ -1,0 +1,47 @@
+<?php
+
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function site_information_help($route_name, RouteMatchInterface $route_match)
+{
+    switch ($route_name) {
+        case 'help.page.site_information':
+            $output = '';
+            $output .= '<h3>' . t('About Site Information') . '</h3>';
+            $output .= '<p>' . t('This module provides a URL that responds with a JSON representation of a given node with the content type &quot;page&quot; only if the previously submitted API Key and a node id (nid) of an appropriate node are present, otherwise it will respond with &quot;403 access denied&quot; page.') . '</p>';
+            return $output;
+    }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function site_information_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
+    if ($form_id == 'system_site_information_settings') {
+        $site_config = \Drupal::service('config.factory')->getEditable('site_information.site');
+        $form['siteapikey'] = [
+            '#type' => 'textfield',
+            '#title' => t('Site API Key'),
+            '#description' => t('Site API Key to display page type node as JSON.'),
+            '#default_value' => $site_config->get('siteapikey'),
+        ];
+        $form['actions']['submit']['#value'] = t('Update Configuration');
+        $form['actions']['submit']['#submit'][] = 'site_api_key_save';
+    }
+}
+
+/**
+ * @param $form
+ * @param FormStateInterface $form_state
+ */
+function site_api_key_save(&$form, FormStateInterface $form_state) {
+    $site_config = \Drupal::getContainer()->get('config.factory')->getEditable('site_information.site');
+    $site_config->set('siteapikey', $form_state->getValue('siteapikey'))->save();
+    \Drupal::messenger()->addStatus(t('The configuration for site API key have been Updated -') . ' ' . $form_state->getValue('siteapikey'));
+}

@@ -1,0 +1,7 @@
+site_information.jsonpage:
+  path: '/jsonpage/{type}/{nid}'
+  defaults:
+    _title: 'JSON Page for Site API Key Display'
+    _controller: '\Drupal\site_information\Controller\JsonPageController::JsonPage'
+  requirements:
+    _permission: 'access content'
